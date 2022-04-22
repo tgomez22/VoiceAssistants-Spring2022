@@ -52,10 +52,24 @@ function startSpeechRecognition(field) {
 function parseDate(transcript){
     let lowerCaseTranscript = transcript.toLowerCase().split(" ");
     console.log(lowerCaseTranscript);
-    if (lowerCaseTranscript.length < 3 || lowerCaseTranscript.length > 3){
+    if (lowerCaseTranscript.length < 2 || lowerCaseTranscript.length > 3){
         let errMsg = new SpeechSynthesisUtterance("I'm sorry but I didn't get that. Can you repeat that?");
         errMsg.addEventListener('end', event => {startSpeechRecognition(deptDate)});
         synthesis.speak(errMsg);
+    } else if (lowerCaseTranscript.length === 2) {
+        let desiredMonth = months[lowerCaseTranscript[0]];
+        let desiredDay = parseInt(lowerCaseTranscript[1], 10);
+        if (desiredDay < 10) {
+            desiredDay = String(desiredDay);
+            desiredDay = '0' + desiredDay;
+        } else {
+            desiredDay = String(desiredDay);
+        }
+        let desiredYear = new Date();
+        desiredYear = desiredYear.getFullYear();
+        let desiredDate = String(desiredYear) + '-' + desiredMonth + '-' + desiredDay;
+        humanFriendlyDate = transcript;
+        return desiredDate;
     } else {
         let desiredMonth = months[lowerCaseTranscript[0]];
         let desiredDay = parseInt(lowerCaseTranscript[1], 10);
@@ -74,7 +88,6 @@ function parseDate(transcript){
 }
 
 window.onload = (event) => {
-
     document.getElementById("help").addEventListener('click', event => {
         event.preventDefault();
         const helpMessage = new SpeechSynthesisUtterance("Hello and welcome to wings! This form is filled out using your voice. Please select an input and listen to the voice prompt. When the prompt is finished speaking, wait a second or two before answering the question.");
