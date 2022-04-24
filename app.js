@@ -27,7 +27,7 @@ const months = {
 
 
 function startSpeechRecognition(field) {
-    recognition.addEventListener('result', event => {
+    recognition.addEventListener('result', recognition.res = function (event) {
         event.stopPropagation();
         const transcript = Array.from(event.results)
             .map(result => result[0])
@@ -41,6 +41,13 @@ function startSpeechRecognition(field) {
         field.blur();
     }, {once: true});
     
+    recognition.addEventListener('error', event => {
+        recognition.stop();
+        recognition.removeEventListener('result', recognition.res, false);
+        let errMsg = new SpeechSynthesisUtterance("I'm sorry but I encountered an error. You can type in your answer if that is more convenient. You can also click out of the box, and click back into it to restart the speech prompt if you want to answer by voice.");
+        synthesis.speak(errMsg);
+    });
+
     recognition.addEventListener('speechend', event => {
         recognition.stop();
     })
